@@ -2,7 +2,7 @@
 // @author         https://github.com/balthild
 // @name           IITC plugin: Force refresh
 // @category       Tweaks
-// @version        0.2.1
+// @version        0.2.2
 // @description    Reload intel data without refreshing the page.
 // @id             force-refresh
 // @namespace      https://github.com/IITC-CE/ingress-intel-total-conversion
@@ -19,7 +19,7 @@ if(typeof window.plugin !== 'function') window.plugin = function() {};
 //PLUGIN AUTHORS: writing a plugin outside of the IITC build environment? if so, delete these lines!!
 //(leaving them in place might break the 'About IITC' page or break update checks)
 plugin_info.buildName = 'local';
-plugin_info.dateTimeVersion = '2021-02-10-192412';
+plugin_info.dateTimeVersion = '2021-02-10-195920';
 plugin_info.pluginId = 'force-refresh';
 //END PLUGIN AUTHORS NOTE
 
@@ -29,7 +29,7 @@ const setup = function() {
     const toolbar = L.DomUtil.create('div', 'leaflet-bar');
     const button = L.DomUtil.create('a', 'leaflet-refresh');
 
-    button.innerText = '🗘';
+    button.innerText = '↻';
     button.onclick = function() {
         idleReset();
         window.mapDataRequest.cache = new DataCache();
