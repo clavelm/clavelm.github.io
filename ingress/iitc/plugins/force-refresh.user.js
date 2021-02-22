@@ -2,7 +2,7 @@
 // @author         https://github.com/balthild
 // @name           IITC plugin: Force refresh
 // @category       Tweaks
-// @version        0.2.3
+// @version        0.2.5.20210222.203239
 // @description    Reload intel data without refreshing the page.
 // @id             force-refresh
 // @namespace      https://github.com/IITC-CE/ingress-intel-total-conversion
@@ -19,25 +19,28 @@ if(typeof window.plugin !== 'function') window.plugin = function() {};
 //PLUGIN AUTHORS: writing a plugin outside of the IITC build environment? if so, delete these lines!!
 //(leaving them in place might break the 'About IITC' page or break update checks)
 plugin_info.buildName = 'local';
-plugin_info.dateTimeVersion = '2021-02-19-231750';
+plugin_info.dateTimeVersion = '2021-02-22-203239';
 plugin_info.pluginId = 'force-refresh';
 //END PLUGIN AUTHORS NOTE
 
+window.plugin.forceRefresh = function() {};
 
-const setup = function() {
-    const container = L.DomUtil.create('div', 'leaflet-control');
-    const toolbar = L.DomUtil.create('div', 'leaflet-bar');
-    const button = L.DomUtil.create('a', 'leaflet-refresh');
+window.plugin.forceRefresh.onRefreshClick = function() {
+  window.idleReset();
+  window.mapDataRequest.cache = new DataCache();
+  window.mapDataRequest.refresh();
+  window.mapDataRequest.processRequestQueue();
+}
 
-    button.innerText = '↻';
-    button.onclick = function() {
-        window.idleReset();
-    };
+var setup = function() {
+  var container = L.DomUtil.create('div', 'leaflet-control');
+  var toolbar = L.DomUtil.create('div', 'leaflet-bar');
+  var button = L.DomUtil.create('a', 'leaflet-refresh');
 
-    toolbar.appendChild(button);
-    container.appendChild(toolbar);
-
-    document.querySelector('.leaflet-top.leaflet-left').appendChild(container);
+  $(button).text("↻").on('click', window.plugin.forceRefresh.onRefreshClick)
+           .appendTo(toolbar)
+           .parent().appendTo(container)
+           .parent().appendTo('.leaflet-top.leaflet-left');
 };
 
 setup.info = plugin_info; //add the script info data to the function as a property
