@@ -2,7 +2,7 @@
 // @author         Mathieu CLAVEL
 // @name           IITC plugin: Share selected portal
 // @category       Controls
-// @version        0.1.0
+// @version        0.1.1.20210220.230059
 // @description    Add a share link when a portal is selected
 // @id             share-selected-portal
 // @namespace      https://github.com/IITC-CE/ingress-intel-total-conversion
@@ -19,7 +19,7 @@ if(typeof window.plugin !== 'function') window.plugin = function() {};
 //PLUGIN AUTHORS: writing a plugin outside of the IITC build environment? if so, delete these lines!!
 //(leaving them in place might break the 'About IITC' page or break update checks)
 plugin_info.buildName = 'local';
-plugin_info.dateTimeVersion = '2021-02-20-200228';
+plugin_info.dateTimeVersion = '2021-02-20-230059';
 plugin_info.pluginId = 'share-selected-portal';
 //END PLUGIN AUTHORS NOTE
 
@@ -28,7 +28,6 @@ window.plugin.ssp = function() {};
 
 // Append a share link in sidebar.
 window.plugin.ssp.onPortalDetailsUpdated = function() {
-  $('.shareLink').remove();
 
   const portalGuid = window.selectedPortal;
 
@@ -42,7 +41,7 @@ window.plugin.ssp.onPortalDetailsUpdated = function() {
 
   const posOnClick = window.showPortalPosLinks.bind(this, lat, lng, title);
 
-  const shareLink = $('<a>', { class: 'shareLink' }).text('Share portal').click(posOnClick);
+  const shareLink = $('<a>', { class: 'shareLink' }).text('⇛').click(posOnClick);
 
   // Prepend the share link to mobile status-bar
   $('#updatestatus').prepend(shareLink);
@@ -50,10 +49,15 @@ window.plugin.ssp.onPortalDetailsUpdated = function() {
 
 }
 
+window.plugin.ssp.onPortalSelected = function() {
+  $('.shareLink').remove();
+}
+
 const setup = function() {
 
   if (typeof android !== 'undefined' && android && android.intentPosLink) {
     window.addHook('portalDetailsUpdated', window.plugin.ssp.onPortalDetailsUpdated);
+    window.addHook('portalSelected', window.plugin.ssp.onPortalSelected);
   }
 
 };
