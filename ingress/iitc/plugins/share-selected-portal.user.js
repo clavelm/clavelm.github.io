@@ -2,7 +2,7 @@
 // @author         Mathieu CLAVEL
 // @name           IITC plugin: Share selected portal
 // @category       Controls
-// @version        0.1.1.20210220.230059
+// @version        0.1.1.20210223.210304
 // @description    Add a share link when a portal is selected
 // @id             share-selected-portal
 // @namespace      https://github.com/IITC-CE/ingress-intel-total-conversion
@@ -19,45 +19,65 @@ if(typeof window.plugin !== 'function') window.plugin = function() {};
 //PLUGIN AUTHORS: writing a plugin outside of the IITC build environment? if so, delete these lines!!
 //(leaving them in place might break the 'About IITC' page or break update checks)
 plugin_info.buildName = 'local';
-plugin_info.dateTimeVersion = '2021-02-20-230059';
+plugin_info.dateTimeVersion = '2021-02-23-210304';
 plugin_info.pluginId = 'share-selected-portal';
 //END PLUGIN AUTHORS NOTE
 
 // use own namespace for plugin
 window.plugin.ssp = function() {};
 
+window.plugin.ssp.shareLink = undefined;
+
 // Append a share link in sidebar.
 window.plugin.ssp.onPortalDetailsUpdated = function() {
 
-  const portalGuid = window.selectedPortal;
+  var portalGuid = window.selectedPortal;
 
   if(portalGuid == null) return;
 
-  const data = window.portals[portalGuid].options.data;
+  var data = window.portals[portalGuid].options.data;
 
-  const lat = data.latE6 / 1E6;
-  const lng = data.lngE6 / 1E6;
-  const title = (data && data.title) || 'null';
+  var lat = data.latE6 / 1E6;
+  var lng = data.lngE6 / 1E6;
+  var title = (data && data.title) || 'null';
 
-  const posOnClick = window.showPortalPosLinks.bind(this, lat, lng, title);
+  var posOnClick = window.showPortalPosLinks.bind(this, lat, lng, title);
 
-  const shareLink = $('<a>', { class: 'shareLink' }).text('⇛').click(posOnClick);
+  window.plugin.ssp.shareLink.off('click').on('click', posOnClick);
 
   // Prepend the share link to mobile status-bar
-  $('#updatestatus').prepend(shareLink);
-  $('#updatestatus .shareLink').attr('title', '');
+  $('#updatestatus').prepend(window.plugin.ssp.shareLink);
 
 }
 
 window.plugin.ssp.onPortalSelected = function() {
-  $('.shareLink').remove();
+  window.plugin.ssp.shareLink.remove();
 }
 
-const setup = function() {
+var setup = function() {
 
   if (typeof android !== 'undefined' && android && android.intentPosLink) {
     window.addHook('portalDetailsUpdated', window.plugin.ssp.onPortalDetailsUpdated);
     window.addHook('portalSelected', window.plugin.ssp.onPortalSelected);
+
+    var span = $('<span>')
+      .css('background-image', 'url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QAAKqNIzIAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAAHdElNRQflAhcVAAgpZfV+AAAAw0lEQVQoz3WRsQ7BYBSFj8YgdGLxDiab6EMw4QmsXqCtF7F3kngMsRiwsti1UdFK5DP4G8HfM93knuR+51zJIubExISyiwlXAFLGkmNxDORKkhoaWgx01TNjpsPvss2CJxuOJCTscIubEQEtZiScmeJQpU+fakGcAhkPUkLq/8wxb+UMbZkc8fHaU4dcgYy85ITEiAif5hekh2cgS2LGJOxNzN+iOBnsO76lycpWazPW1LH/YqWbJCnVsuyfARcu+JL0AjA1mAmE9DgjAAAAJXRFWHRkYXRlOmNyZWF0ZQAyMDIxLTAyLTIzVDIxOjAwOjA4KzAwOjAwneNzuQAAACV0RVh0ZGF0ZTptb2RpZnkAMjAyMS0wMi0yM1QyMTowMDowOCswMDowMOy+ywUAAAAZdEVYdFNvZnR3YXJlAHd3dy5pbmtzY2FwZS5vcmeb7jwaAAAAAElFTkSuQmCC")')
+      .css('background-size', 'cover')
+      .css('background-repeat', 'no-repeat')
+      .css('display', 'inline-block')
+      .css('float', 'left')
+      .css('margin', '3px 1px 0 4px')
+      .css('width', '16px')
+      .css('height', '15px')
+      .css('overflow', 'hidden');
+
+    window.plugin.ssp.shareLink = $('<a>')
+      .addClass('shareLink')
+      .css('float', 'left')
+      .css('margin', '-19px 0 0 -5px')
+      .css('padding', '0 3px 1px 4px')
+      .css('background', '#262c32')
+      .append(span);
   }
 
 };
